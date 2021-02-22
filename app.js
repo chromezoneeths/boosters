@@ -23,7 +23,7 @@ const server = app.listen(PORT, function () {
     console.log("Server listening at http://%s:%s", host, port)
 })
 
-app.use('/', express.static(__dirname + "/client"))
+app.use('/', express.static(__dirname + "/client"));
 
 //for the booster member, they click a link in their email to boosterdomain.com/id/XXXXXXXXX
 app.get('/id/:id', async (req, res) => {
@@ -38,3 +38,23 @@ app.get('/id/:id', async (req, res) => {
 app.post('/checkin', async (req, res) => {
 
 });
+
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+function sendEmail(email, name) {
+    console.log(email, name);
+    // ...
+}
+
+// Handle form submit to generate a new card
+
+app.post('/generate', async (req, res) => {
+    const {body} = req;
+    const {email, name} = body;
+    if (!email || !name) return res.status(400).send('Invalid form content.');
+    if (!EMAIL_REGEX.test(email)) return res.status(400).send('Invalid email.');
+
+    // PASS TO EMAIL HANDLER
+    sendEmail(email, name)
+    res.status(200).redirect('back');
+})
