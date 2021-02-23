@@ -1,7 +1,25 @@
-async function generateImage(email, name) {
-	return new Promise(async (resolve, reject) => {
-		// Generate the image and resolve the promise
+const {readFile} = require('fs');
+
+async function generateImage(_email, name) {
+	const ctx = {
+		/* eslint-disable camelcase */
+		start_year: 2020,
+		end_year: 2021,
+		/* eslint-enable camelcase */
+		name
+	};
+	let out = await new Promise(resolve => {
+		readFile('./template.svg', 'utf8', (error, data) => {
+			console.assert(!error);
+			resolve(data);
+		});
 	});
+	for (const i of Object.getOwnPropertyNames(ctx)) {
+		console.log(i);
+		out = out.replace(new RegExp(`{${i}}`, 'g'), ctx[i]);
+	}
+
+	return out;
 }
 
 module.exports = {
