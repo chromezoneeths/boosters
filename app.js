@@ -10,6 +10,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const querystring = require('querystring');
 const hbs = require('hbs');
+const path = require('path');
 
 const {sendEmail} = require('./email');
 const {generateImage} = require('./svg');
@@ -35,7 +36,7 @@ const EMAIL_REGEX = /^[\w.!#$%&’*+/=?^`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*
 
 // Handle form submit to generate a new card
 
-app.get('/generate', async (request, res) => {
+app.get('/generate', async (request, response) => {
 	const {
 		query
 	} = request;
@@ -51,7 +52,7 @@ app.get('/generate', async (request, res) => {
 		};
 	}
 
-	res.render('pages/generate', data);
+	response.render('pages/generate', data);
 });
 
 async function handleForm(email, name) {
@@ -60,7 +61,7 @@ async function handleForm(email, name) {
 	sendEmail('...');
 }
 
-app.post('/generate', async (request, res) => {
+app.post('/generate', async (request, response) => {
 	const {
 		body
 	} = request;
@@ -69,14 +70,14 @@ app.post('/generate', async (request, res) => {
 		name
 	} = body;
 	if (!email || !name) {
-		return res.status(400).redirect('/generate?' + querystring.stringify({
+		return response.status(400).redirect('/generate?' + querystring.stringify({
 			ok: false,
 			status: 'Invalid form content.'
 		}));
 	}
 
 	if (!EMAIL_REGEX.test(email)) {
-		return res.redirect('/generate?' + querystring.stringify({
+		return response.redirect('/generate?' + querystring.stringify({
 			ok: false,
 			status: 'Invalid email.'
 		}));
@@ -85,10 +86,10 @@ app.post('/generate', async (request, res) => {
 	// PASS TO EMAIL HANDLER
 	handleForm(email, name);
 
-	res.redirect('/generate?' + querystring.stringify({
+	response.redirect('/generate?' + querystring.stringify({
 		ok: true,
 		status: 'Sent email.'
 	}));
 });
 
-app.use('/', express.static(__dirname + '/static'));
+app.use('/', express.static(path.join(__dirname, 'static')));
