@@ -17,7 +17,6 @@ async function generateImage(email, name) {
 		});
 	});
 	for (const i of Object.getOwnPropertyNames(ctx)) {
-		console.log(i);
 		out = out.replace(new RegExp(`{${i}}`, 'g'), ctx[i]);
 	}
 
