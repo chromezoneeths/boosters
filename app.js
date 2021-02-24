@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+// TODO: fix that ^
 const keys = require('./keys.json');
 const {
 	PORT,
