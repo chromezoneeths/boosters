@@ -1,6 +1,7 @@
 const {readFile} = require('fs');
 
-async function generateImage(_email, name) {
+async function generateImage(email, name) {
+	console.log('BUILD FOR', email, name);
 	const ctx = {
 		/* eslint-disable camelcase */
 		start_year: 2020,

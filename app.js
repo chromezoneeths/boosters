@@ -11,6 +11,7 @@ const bodyParser = require('body-parser');
 const querystring = require('querystring');
 const hbs = require('hbs');
 const path = require('path');
+const morgan = require('morgan');
 
 const {sendEmail} = require('./email');
 const {generateImage} = require('./svg');
@@ -20,6 +21,7 @@ app.use(bodyParser.urlencoded({
 	extended: false
 }));
 app.use(bodyParser.json());
+app.use(morgan('tiny'));
 
 // Handlebars setup
 app.set('view engine', 'hbs');
@@ -29,7 +31,7 @@ const server = app.listen(PORT, () => {
 	const host = server.address().address;
 	const port = server.address().port;
 
-	console.log('Server listening at http://%s:%s', host, port);
+	console.log('LISTEN %s %s', host, port);
 });
 
 const EMAIL_REGEX = /^[\w.!#$%&’*+/=?^`{|}~-]+@[a-zA-Z\d-]+(?:\.[a-zA-Z\d-]+)*$/;
@@ -70,6 +72,7 @@ app.post('/generate', async (request, response) => {
 		name
 	} = body;
 	if (!email || !name) {
+		console.log('BAD FORM');
 		return response.status(400).redirect('/generate?' + querystring.stringify({
 			ok: false,
 			status: 'Invalid form content.'
@@ -77,6 +80,7 @@ app.post('/generate', async (request, response) => {
 	}
 
 	if (!EMAIL_REGEX.test(email)) {
+		console.log('BAD EMAIL ADDRESS');
 		return response.redirect('/generate?' + querystring.stringify({
 			ok: false,
 			status: 'Invalid email.'
