@@ -55,7 +55,6 @@ app.get('/generate', async (req, res) => {
 })
 
 async function handleForm(email, name) {
-    console.log(email, name);
     const image = await generateImage(email, name);
     sendEmail("...");
 }
@@ -68,14 +67,20 @@ app.post('/generate', async (req, res) => {
         email,
         name
     } = body;
-    if (!email || !name) return res.status(400).redirect('/generate?' + querystring.stringify({
-        ok: false,
-        status: 'Invalid form content.'
-    }));
-    if (!EMAIL_REGEX.test(email)) return res.redirect('/generate?' + querystring.stringify({
-        ok: false,
-        status: 'Invalid email.'
-    }));
+    if (!email || !name) {
+        console.log(`BAD FORM`);
+        return res.status(400).redirect('/generate?' + querystring.stringify({
+            ok: false,
+            status: 'Invalid form content.'
+        }))
+    };
+    if (!EMAIL_REGEX.test(email)) {
+        console.log("BAD EMAIL ADDRESS");
+        return res.redirect('/generate?' + querystring.stringify({
+            ok: false,
+            status: 'Invalid email.'
+        }))
+    };
 
     // PASS TO EMAIL HANDLER
     handleForm(email, name)
