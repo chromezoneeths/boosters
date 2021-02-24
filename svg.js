@@ -1,13 +1,5 @@
 const {readFile} = require('fs');
-let gm_;
-try {
-	gm_ = require('gm');
-} catch {
-	console.error('GraphicsMagick not found, png production won\'t work');
-	gm_ = false;
-}
-
-const gm = gm_;
+const gm = require('gm');
 
 async function generateImage(email, name) {
 	console.log('BUILD FOR', email, name);
@@ -38,14 +30,6 @@ module.exports = {
 };
 
 function streamSvgAsPng(svg) {
-	if (gm) {
-		try {
-			const svgBuf = Buffer.from(svg, 'utf8');
-			return gm(svgBuf, 'image.svg').stream('png');
-		} catch {
-			return false;
-		}
-	}
-
-	return false;
+	const svgBuf = Buffer.from(svg, 'utf8');
+	return gm(svgBuf, 'image.svg').stream('png');
 }
