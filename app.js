@@ -10,6 +10,7 @@ const express = require('express');
 const bodyParser = require("body-parser");
 const querystring = require('querystring');
 const hbs = require('hbs');
+const morgan = require('morgan');
 
 const {sendEmail} = require('./email');
 const {generateImage} = require('./svg');
@@ -19,6 +20,7 @@ app.use(bodyParser.urlencoded({
     extended: false
 }));
 app.use(bodyParser.json());
+app.use(morgan('tiny'))
 
 // Handlebars setup
 app.set('view engine', 'hbs');
@@ -29,7 +31,7 @@ const server = app.listen(PORT, function () {
     const host = server.address().address
     const port = server.address().port
 
-    console.log("Server listening at http://%s:%s", host, port)
+    console.log("LISTEN %s %s", host, port)
 })
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
