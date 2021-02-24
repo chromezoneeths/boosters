@@ -16,4 +16,6 @@ jobs:
           node-version: "14"
 
       - name: Lint
-        run: npm run lint
+        run: |
+          npm i
+          npm run lint
