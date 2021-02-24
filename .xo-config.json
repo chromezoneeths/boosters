@@ -1,0 +1,22 @@
+{
+	"overrides": [
+		{
+			"files": "static/**",
+			"envs": [
+				"browser"
+			]
+		},
+		{
+			"files": "tests/**",
+			"envs": [
+				"jest"
+			]
+		},
+		{
+			"files": "__mocks__/**",
+			"envs": [
+				"jest"
+			]
+		}
+	]
+}

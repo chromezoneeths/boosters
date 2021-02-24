@@ -1,1 +1,1 @@
-window.history.replaceState({}, document.title, "/generate");
+window.history.replaceState({}, document.title, '/generate');

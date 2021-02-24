@@ -1,5 +1,5 @@
 {
-    "PORT": 4000,
-    "MAILGUN_API_KEY": "API key",
-    "MAILGUN_DOMAIN": "API domain"
+	"PORT": 4000,
+	"MAILGUN_API_KEY": "API key",
+	"MAILGUN_DOMAIN": "API domain"
 }
