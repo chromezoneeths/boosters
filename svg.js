@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-// Fixed in svg branch
-
 const {readFile} = require('fs');
 
 async function generateImage(email, name) {
