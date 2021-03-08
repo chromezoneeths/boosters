@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Boosters - Batch Generate</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<h1>Batch Generate</h1>
+	This form sends some number of membership cards given a file formatted like this.<br>
+	<pre>John Smith,jsmith@eths202.org
+Jane Doe,jdoe@gmail.com
+(etc.)</pre><br>
+	Most spreadsheet programs can export a CSV file like this if you set up an equivalent table.<br><br>
+	<form method="POST" enctype="multipart/form-data">
+		<label for="file">Upload File</label><br>
+		<input name="file" id="file" type="file" required><br>
+		<input type="submit" value="Send">
+	</form>
+</body>
+
+</html>

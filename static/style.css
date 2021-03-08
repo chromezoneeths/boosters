@@ -5,3 +5,14 @@
 .ok-false {
     background-color: rgba(255, 0, 0, 0.5)
 }
+
+pre {
+    display: inline-block;
+    background-color: lightgray;
+    border-color: black;
+    border-style: solid;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: bold;
+    font-size: 200%;
+}

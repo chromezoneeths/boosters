@@ -15,9 +15,11 @@ const querystring = require('querystring');
 const hbs = require('hbs');
 const path = require('path');
 const morgan = require('morgan');
+const formidable = require('formidable');
 
 const {sendEmail} = require('./email');
 const {generateImage} = require('./svg');
+const fs = require('fs');
 
 const app = express();
 app.use(bodyParser.urlencoded({
@@ -62,7 +64,6 @@ app.get('/generate', async (request, response) => {
 });
 
 async function handleForm(email, name) {
-	console.log(email, name);
 	const image = await generateImage(email, name);
 	sendEmail('...');
 }
@@ -137,6 +138,59 @@ app.post('/authenticate.html', (request, response) => {
 	response.writeHead(401);
 	response.write('That doesn\'t look quite right, sorry.<br><a href="/authenticate.html">Try again</a>');
 	response.end();
+});
+
+app.post('/generate-batch.html', (request, response) => {
+	if (process.env.B_SECRET) {
+		const secret = request.cookies.SECRET;
+		if (secret !== process.env.B_SECRET) {
+			response.redirect('/authenticate.html');
+			return;
+		}
+	}
+
+	new formidable.IncomingForm().parse(request, async (error, fields, files) => {
+		if (error) {
+			console.error('ERROR', error);
+			response.writeHead(500, 'Form parsing failed');
+			response.end();
+			return;
+		}
+
+		const fileSpec = files.file;
+		const file = await new Promise(resolve => {
+			fs.readFile(fileSpec.path, (error, data) => {
+				if (error) {
+					resolve(false);
+					return;
+				}
+
+				resolve(data.toString('utf8'));
+			});
+		}).catch(() => false);
+		if (file) {
+			try {
+				const entries = [];
+				for (const entry of file.split('\n')) {
+					const split = entry.split(',');
+					entries.push({name: split[0], address: split[1]});
+				}
+
+				for (const entry of entries) {
+					handleForm(entry.address, entry.name);
+				}
+
+				response.redirect('/generate-batch.html');
+				response.end();
+			} catch {
+				response.writeHead(500);
+				response.end();
+			}
+		} else {
+			response.writeHead(500);
+			response.end();
+		}
+	});
 });
 
 app.use('/', express.static(path.join(__dirname, 'static')));
