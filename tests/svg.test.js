@@ -1,5 +1,4 @@
 const svg = require('../svg');
-const fs = require('fs');
 
 beforeEach(() => {
 	jest.resetModules(); // Most important - it clears the cache
