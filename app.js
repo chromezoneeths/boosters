@@ -19,6 +19,7 @@ const formidable = require('formidable');
 
 const {sendEmail} = require('./email');
 const {generateImage} = require('./svg');
+// TODO: Replace with promisified fs
 const fs = require('fs');
 
 const app = express();
@@ -159,6 +160,7 @@ app.post('/generate-batch.html', (request, response) => {
 
 		const fileSpec = files.file;
 		const file = await new Promise(resolve => {
+			// TODO: Convert to promisified fs
 			fs.readFile(fileSpec.path, (error, data) => {
 				if (error) {
 					resolve(false);
