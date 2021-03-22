@@ -1,5 +1,5 @@
-const {readFile} = require('fs');
-const gm = require('gm');
+const fs = require('sb-fs');
+const {exec} = require('child_process');
 
 async function generateImage(email, name) {
 	console.log('BUILD FOR', email, name);
@@ -10,12 +10,7 @@ async function generateImage(email, name) {
 		/* eslint-enable camelcase */
 		name
 	};
-	let out = await new Promise(resolve => {
-		readFile('./template.svg', 'utf8', (error, data) => {
-			console.assert(!error);
-			resolve(data);
-		});
-	});
+	let out = await fs.readFile('./template.svg', 'utf8');
 	for (const i of Object.getOwnPropertyNames(ctx)) {
 		out = out.replace(new RegExp(`{${i}}`, 'g'), ctx[i]);
 	}
@@ -25,10 +20,20 @@ async function generateImage(email, name) {
 
 module.exports = {
 	generateImage,
-	streamSvgAsPng
+	asPng
 };
 
-function streamSvgAsPng(svg) {
-	const svgBuf = Buffer.from(svg, 'utf8');
-	return gm(svgBuf, 'image.svg').stream('png');
+let runningConversions = 0;
+
+async function asPng(svg) {
+	runningConversions++;
+	await fs.mkdir(`/tmp/svg_convert_${runningConversions}`).catch(() => {});
+	await fs.writeFile(`/tmp/svg_convert_${runningConversions}/svg.svg`, svg);
+	await new Promise(resolve => {
+		exec(`convert /tmp/svg_convert_${runningConversions}/svg.svg /tmp/svg_convert_${runningConversions}/out.png`, () => {
+			resolve();
+		});
+	});
+	const output = await fs.readFile(`/tmp/svg_convert_${runningConversions}/out.png`).catch(error => error);
+	return output;
 }
