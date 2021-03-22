@@ -10,6 +10,11 @@ test('svg production includes name', async () => {
 });
 
 test('png production works', async () => {
+	if (process.platform === 'win32') {
+		console.error('THIS TEST DOESN\'T BEHAVE CORRECTLY ON WINDOWS');
+		console.error('See #6');
+	}
+
 	process.env.ALLOW_GM = 'TRUE';
 	const svgString = `
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
