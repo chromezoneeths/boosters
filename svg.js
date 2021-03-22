@@ -35,5 +35,6 @@ async function asPng(svg) {
 		});
 	});
 	const output = await fs.readFile(`/tmp/svg_convert_${runningConversions}/out.png`).catch(error => error);
+	runningConversions--;
 	return output;
 }
