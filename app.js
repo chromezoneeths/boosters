@@ -17,7 +17,7 @@ const morgan = require('morgan');
 const formidable = require('formidable');
 
 const {sendEmail} = require('./email');
-const {generateImage} = require('./svg');
+const {generateImage, asPng} = require('./svg');
 // TODO: Replace with promisified fs
 const fs = require('fs');
 
@@ -64,6 +64,7 @@ app.get('/generate', async (request, response) => {
 
 async function handleForm(email, name) {
 	const image = await generateImage(email, name);
+	const png = await asPng(image);
 	sendEmail('...');
 }
 
