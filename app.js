@@ -67,7 +67,7 @@ app.get('/generate', async (request, response) => {
 async function handleForm(email, name) {
 	const image = await generateImage(email, name);
 	const png = await asPng(image);
-	sendEmail('...');
+	sendEmail(email, png);
 }
 
 app.post('/generate', async (request, response) => {
