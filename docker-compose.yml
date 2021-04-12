@@ -9,3 +9,5 @@ services:
       - ./keys.json:/app/keys.json:ro
     ports:
       - 8000:8000
+    # environment:
+    # B_SECRET: "ChangeThisInProduction!!!"
