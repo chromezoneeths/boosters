@@ -10,6 +10,7 @@ const {
 const crypto = require('crypto');
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const querystring = require('querystring');
 const hbs = require('hbs');
 const path = require('path');
@@ -26,6 +27,7 @@ app.use(bodyParser.urlencoded({
 	extended: false
 }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(morgan('tiny'));
 
 // Handlebars setup
@@ -69,6 +71,14 @@ async function handleForm(email, name) {
 }
 
 app.post('/generate', async (request, response) => {
+	if (process.env.B_SECRET) {
+		const secret = request.cookies.SECRET;
+		if (secret !== process.env.B_SECRET) {
+			response.redirect('/authenticate.html');
+			return;
+		}
+	}
+
 	const {
 		body
 	} = request;
@@ -101,7 +111,46 @@ app.post('/generate', async (request, response) => {
 	}));
 });
 
+if ((!process.env.B_SECRET) && (!process.env.B_SUPPRESS_SECRET_WARNING)) {
+	console.error('In production, B_SECRET should be set to require user authentication.');
+	console.error('Set B_SUPPRESS_SECRET_WARNING to hide this message in development.');
+}
+
+app.post('/authenticate.html', (request, response) => {
+	if (!process.env.B_SECRET) {
+		response.writeHead(200);
+		response.write('No authentication required. (If this is a production environment, please let someone know!)');
+		response.end();
+		return;
+	}
+
+	if (request.body.secret === process.env.B_SECRET) {
+		response.cookie('SECRET', request.body.secret, {
+			maxAge: 24 * 60 * 60 * 2,
+			httpOnly: true,
+			secure: process.env.B_USING_HTTPS !== undefined
+		});
+		response.writeHead(200);
+		response.write('That looks right, have a nice day!<br><a href="/">Back to start</a>');
+		response.end();
+		return;
+	}
+
+	console.error(`Spooky! Someone at ${request.socket.remoteAddress} tried to authenticate with an invalid secret (${request.body.secret}).`);
+	response.writeHead(401);
+	response.write('That doesn\'t look quite right, sorry.<br><a href="/authenticate.html">Try again</a>');
+	response.end();
+});
+
 app.post('/generate-batch.html', (request, response) => {
+	if (process.env.B_SECRET) {
+		const secret = request.cookies.SECRET;
+		if (secret !== process.env.B_SECRET) {
+			response.redirect('/authenticate.html');
+			return;
+		}
+	}
+
 	new formidable.IncomingForm().parse(request, async (error, fields, files) => {
 		if (error) {
 			console.error('ERROR', error);
