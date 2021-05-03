@@ -176,6 +176,10 @@ app.post('/generate-batch.html', (request, response) => {
 				const entries = [];
 				for (const entry of file.split('\n')) {
 					const split = entry.split(',');
+					if (split.length !== 2) {
+						continue;
+					}
+
 					entries.push({name: split[0], address: split[1]});
 				}
 
