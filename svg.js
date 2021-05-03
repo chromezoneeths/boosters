@@ -26,15 +26,15 @@ module.exports = {
 let runningConversions = 0;
 
 async function asPng(svg) {
-	runningConversions++;
-	await fs.mkdir(`/tmp/svg_convert_${runningConversions}`).catch(() => {});
-	await fs.writeFile(`/tmp/svg_convert_${runningConversions}/svg.svg`, svg);
+	const thisConversion = runningConversions++;
+	await fs.mkdir(`/tmp/svg_convert_${thisConversion}`).catch(() => {});
+	await fs.writeFile(`/tmp/svg_convert_${thisConversion}/svg.svg`, svg);
 	await new Promise(resolve => {
-		exec(`convert /tmp/svg_convert_${runningConversions}/svg.svg /tmp/svg_convert_${runningConversions}/out.png`, () => {
+		exec(`convert /tmp/svg_convert_${thisConversion}/svg.svg /tmp/svg_convert_${thisConversion}/out.png`, () => {
 			resolve();
 		});
 	});
-	const output = await fs.readFile(`/tmp/svg_convert_${runningConversions}/out.png`).catch(error => error);
+	const output = await fs.readFile(`/tmp/svg_convert_${thisConversion}/out.png`).catch(error => error);
 	runningConversions--;
 	return output;
 }
