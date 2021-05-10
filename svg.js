@@ -1,14 +1,16 @@
 const fs = require('sb-fs');
 const {exec} = require('child_process');
 
-async function generateImage(email, name) {
+async function generateImage(email, name, count) {
 	console.log('BUILD FOR', email, name);
 	const ctx = {
 		/* eslint-disable camelcase */
 		start_year: 2020,
 		end_year: 2021,
 		/* eslint-enable camelcase */
-		name
+		name,
+		count,
+		people: count > 1 ? 'people' : 'person'
 	};
 	let out = await fs.readFile('./template.svg', 'utf8');
 	for (const i of Object.getOwnPropertyNames(ctx)) {

@@ -64,8 +64,8 @@ app.get('/generate', async (request, response) => {
 	response.render('pages/generate', data);
 });
 
-async function handleForm(email, name) {
-	const image = await generateImage(email, name);
+async function handleForm(email, name, count) {
+	const image = await generateImage(email, name, count);
 	const png = await asPng(image);
 	sendEmail(email, png);
 }
@@ -84,9 +84,10 @@ app.post('/generate', async (request, response) => {
 	} = request;
 	const {
 		email,
-		name
+		name,
+		count
 	} = body;
-	if (!email || !name) {
+	if (!email || !name || !count) {
 		console.log('BAD FORM');
 		return response.status(400).redirect('/generate?' + querystring.stringify({
 			ok: false,
@@ -103,7 +104,7 @@ app.post('/generate', async (request, response) => {
 	}
 
 	// PASS TO EMAIL HANDLER
-	handleForm(email, name);
+	handleForm(email, name, Number.parseInt(count, 10));
 
 	response.redirect('/generate?' + querystring.stringify({
 		ok: true,
@@ -180,11 +181,11 @@ app.post('/generate-batch.html', (request, response) => {
 						continue;
 					}
 
-					entries.push({name: split[0], address: split[1]});
+					entries.push({name: split[0], address: split[1], count: split[2]});
 				}
 
 				for (const entry of entries) {
-					handleForm(entry.address, entry.name);
+					handleForm(entry.address, entry.name, entry.count);
 				}
 
 				response.redirect('/generate-batch.html');
